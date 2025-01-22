@@ -54,12 +54,12 @@ public class PlayerThreeD : MonoBehaviour
             {
                 timeFillingWater += Time.deltaTime;
                 float scaleToSet = Mathf.InverseLerp(0.0f, timeToFillWater, timeFillingWater);
-                water.transform.localScale = new Vector3(scaleToSet, 1.0f, 1.0f);
+                water.transform.localScale = new Vector3(scaleToSet, scaleToSet, scaleToSet);
             }
             else
             {
                 water.SetActive(false);
-                water.transform.localScale = new Vector3(0.0f, 0.0f, 1.0f);
+                water.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
                 shootingWater = false;
                 timeFillingWater = 0.0f;
             }
