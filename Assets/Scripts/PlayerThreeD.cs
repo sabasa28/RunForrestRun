@@ -4,31 +4,27 @@ using UnityEngine;
 using UnityEngine.UI;
 public class PlayerThreeD : MonoBehaviour
 {
-    [SerializeField]
-    float speed;
-    [SerializeField]
-    float rotationSpeed;
+    [SerializeField] float speed;
+    [SerializeField] float rotationSpeed;
     bool shootingWater;
-    [SerializeField]
-    bool canMoveWhileShooting;
+    [SerializeField] bool canMoveWhileShooting;
     float horizontalValue;
     float verticalValue;
     bool moving;
-    [SerializeField]
-    GameObject water;
-    [SerializeField]
-    float timeToFillWater;
+    [SerializeField] GameObject water;
+    [SerializeField] float timeToFillWater;
     float timeFillingWater = 0.0f;
     CharacterController characterController;
-    [SerializeField]
-    Slider HealthBar;
-    [SerializeField]
-    float MaxHealth;
-    [SerializeField]
-    float CurrentHealth;
-    [SerializeField]
-    float FireDamage; // xd
-
+    [SerializeField] Slider HealthBar;
+    [SerializeField] float MaxHealth;
+    [SerializeField] float CurrentHealth;
+    [SerializeField] float FireDamage; // xd
+    [SerializeField] float CurrenthoseLength;
+    [SerializeField] Transform HoseBaseTransform;
+    [SerializeField] float HoseRubberStrenght;
+    [SerializeField] float debugDistToHose;
+    [SerializeField] bool storeAvailable;
+    [SerializeField] bool burning;
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -39,14 +35,21 @@ public class PlayerThreeD : MonoBehaviour
     {
         if (Input.GetButtonDown("Jump"))
         {
-            shootingWater = true;
-            //if (verticalValue > 0.0f || horizontalValue > 0.0f) //esto se usa si queremos que la rotacion al disparar vaya mas bien con los inputs mas que con la direccion
-            //{
-            //    bool bOnXAxis = (Mathf.Abs(verticalValue) > Mathf.Abs(horizontalValue)); //me quedo el right como forward pero me dio fiaca cambiarlo
-            //    float axisSign = Mathf.Sign(bOnXAxis ? verticalValue : horizontalValue); //para saber si es positiva o negativa la direccion a la que mira en el axis
-            //    transform.rotation = Quaternion.LookRotation((bOnXAxis ? Vector3.forward : Vector3.right) * axisSign, Vector3.up);
-            //}
-            water.SetActive(true);
+            if (storeAvailable)
+            {
+                //open store
+            }
+            else
+            {
+                shootingWater = true;
+                //if (verticalValue > 0.0f || horizontalValue > 0.0f) //esto se usa si queremos que la rotacion al disparar vaya mas bien con los inputs mas que con la direccion
+                //{
+                //    bool bOnXAxis = (Mathf.Abs(verticalValue) > Mathf.Abs(horizontalValue)); //me quedo el right como forward pero me dio fiaca cambiarlo
+                //    float axisSign = Mathf.Sign(bOnXAxis ? verticalValue : horizontalValue); //para saber si es positiva o negativa la direccion a la que mira en el axis
+                //    transform.rotation = Quaternion.LookRotation((bOnXAxis ? Vector3.forward : Vector3.right) * axisSign, Vector3.up);
+                //}
+                water.SetActive(true);
+            }
         }
         if (shootingWater)
         {
@@ -70,13 +73,37 @@ public class PlayerThreeD : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if (burning)
+        {
+            CurrentHealth -= FireDamage * Time.fixedDeltaTime;
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0.0f, MaxHealth);
+            UpdateHealthBar();
+            burning = false;
+        }
         if (!shootingWater || canMoveWhileShooting)
         {
             if (moving && (Mathf.Abs(horizontalValue) > 0.01f || Mathf.Abs(verticalValue) > 0.01f))
             {
                 transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, new Vector3(horizontalValue, 0.0f, verticalValue), rotationSpeed * Time.fixedDeltaTime), Vector3.up); //no se si este uso de deltatime esta del todo bien
             }
-            characterController.SimpleMove(speed * Time.fixedDeltaTime * new Vector3(verticalValue, 0.0f, -horizontalValue));
+            Vector3 movement = speed * Time.fixedDeltaTime * new Vector3(verticalValue, 0.0f, -horizontalValue);
+            characterController.SimpleMove(movement);
+            float distTohose = Vector3.Distance(HoseBaseTransform.position, transform.position);
+            debugDistToHose = distTohose;
+            if (distTohose > CurrenthoseLength)
+            {
+                Vector3 normalVector = (HoseBaseTransform.position - transform.position).normalized;
+                characterController.SimpleMove(normalVector * (distTohose - CurrenthoseLength) * HoseRubberStrenght);
+                Debug.Log("Pushed Back " + (normalVector * (distTohose - CurrenthoseLength)));
+            }
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Store"))
+        {
+
         }
     }
 
@@ -84,9 +111,7 @@ public class PlayerThreeD : MonoBehaviour
     {
         if (other.CompareTag("Fire"))
         {
-            CurrentHealth -= FireDamage * Time.deltaTime;
-            CurrentHealth = Mathf.Clamp(CurrentHealth, 0.0f, MaxHealth);
-            UpdateHealthBar();
+            burning = true;
         }
     }
 

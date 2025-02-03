@@ -17,12 +17,15 @@ public class Fire : MonoBehaviour
         Num
     }
     public FireManager fireManager;
-    [SerializeField] float minTimeToSpawn;
-    [SerializeField] float maxTimeToSpawn;
-    [SerializeField] float timeToExpand;
-    int[] orderToCheck = new int[(int)DirectionsToExpandTo.Num];
-    void Start()
+    [SerializeField] protected float minTimeToSpawn;
+    [SerializeField] protected float maxTimeToSpawn;
+    [SerializeField] protected float timeToExpand;
+    public Vector2Int debugGridPos;
+    protected int[] orderToCheck;
+    protected int posibleDirections = (int)DirectionsToExpandTo.Num;
+    protected virtual void Start()
     {
+        orderToCheck = new int[posibleDirections];
         for (int i = 0; i < orderToCheck.Length; i++)
         {
             orderToCheck[i] = i;
@@ -31,7 +34,7 @@ public class Fire : MonoBehaviour
         StartCoroutine(ExpandOnTimer());
     }
 
-    IEnumerator ExpandOnTimer()
+    protected IEnumerator ExpandOnTimer()
     {
         while (true) //no hagan esto en casa niños
         { 
@@ -41,7 +44,7 @@ public class Fire : MonoBehaviour
         }
     }
 
-    void Expand()
+    protected void Expand()
     {
         //randomizo el array
         for (int i = 0; i < orderToCheck.Length; i++)
@@ -54,41 +57,47 @@ public class Fire : MonoBehaviour
 
         foreach (int dir in orderToCheck)
         {
-            Vector2 posToSpawn = new(transform.position.x, transform.position.z);
-            switch ((DirectionsToExpandTo)dir)
+            Vector2 posToSpawn = GetNewPositionFromDirection(dir);
+            Vector2Int intPosToSpawn = new((int)posToSpawn.x, (int)posToSpawn.y);
+            if (fireManager.CheckIfAvailable(intPosToSpawn))
             {
-                case DirectionsToExpandTo.UpLeft:
-                    posToSpawn += Vector2.up + Vector2.left;
-                    break;
-                case DirectionsToExpandTo.Up:
-                    posToSpawn += Vector2.up;
-                    break;
-                case DirectionsToExpandTo.UpRight:
-                    posToSpawn += Vector2.up + Vector2.right;
-                    break;
-                case DirectionsToExpandTo.Left:
-                    posToSpawn += Vector2.left;
-                    break;
-                case DirectionsToExpandTo.Right:
-                    posToSpawn += Vector2.right;
-                    break;
-                case DirectionsToExpandTo.DownLeft:
-                    posToSpawn += Vector2.down + Vector2.left;
-                    break;
-                case DirectionsToExpandTo.Down:
-                    posToSpawn += Vector2.down;
-                    break;
-                case DirectionsToExpandTo.DownRight:
-                    posToSpawn += Vector2.down + Vector2.right;
-                    break;
-            }
-            Vector2Int intPostToSpawn = new((int)posToSpawn.x, (int)posToSpawn.y);
-            if (fireManager.CheckIfAvailable(intPostToSpawn))
-            {
-                fireManager.SpawnFire(intPostToSpawn);
+                fireManager.SpawnFire(intPosToSpawn);
                 break;
             }
         }
+    }
+
+    public virtual Vector2 GetNewPositionFromDirection(int directionsEnumIndex)
+    {
+        Vector2 posToSpawn = new(transform.position.x, transform.position.z);
+        switch ((DirectionsToExpandTo)directionsEnumIndex)
+        {
+            case DirectionsToExpandTo.UpLeft:
+                posToSpawn += Vector2.up + Vector2.left;
+                break;
+            case DirectionsToExpandTo.Up:
+                posToSpawn += Vector2.up;
+                break;
+            case DirectionsToExpandTo.UpRight:
+                posToSpawn += Vector2.up + Vector2.right;
+                break;
+            case DirectionsToExpandTo.Left:
+                posToSpawn += Vector2.left;
+                break;
+            case DirectionsToExpandTo.Right:
+                posToSpawn += Vector2.right;
+                break;
+            case DirectionsToExpandTo.DownLeft:
+                posToSpawn += Vector2.down + Vector2.left;
+                break;
+            case DirectionsToExpandTo.Down:
+                posToSpawn += Vector2.down;
+                break;
+            case DirectionsToExpandTo.DownRight:
+                posToSpawn += Vector2.down + Vector2.right;
+                break;
+        }
+        return posToSpawn;
     }
 
     public void DespawnFire()
