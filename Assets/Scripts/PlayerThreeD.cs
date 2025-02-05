@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 public class PlayerThreeD : MonoBehaviour
 {
     [SerializeField] float speed;
@@ -25,14 +26,55 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] float debugDistToHose;
     [SerializeField] bool storeAvailable;
     [SerializeField] bool burning;
+    [SerializeField] TextMeshProUGUI SeedsAmountText;
+    [SerializeField] int seedsAmount;
+    [SerializeField] TextMeshProUGUI FruitsAmountText;
+    [SerializeField] int fruitsAmount;
+    bool AttemptingToPlant;
+    [SerializeField] GameObject TreePlantingRangeVisualizer;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+    }
+
+    private void Start()
+    {
+        TreePlantingRangeVisualizer.transform.localScale = Vector3.one * 2 * TreeManager.Get().GetMinDistanceBetweenTrees(); //multiplicamos por dos porque la distancia es el radio y la escala el diametro 
         CurrentHealth = MaxHealth;
+        UpdateSeedsAmountText();
+        UpdateFruitsAmountText();
+        UpdateHealthBar();
     }
 
     private void Update() //hice todo un quilombo con las direcciones pero no me voy a poner a arreglarlo, anda
     {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            if (seedsAmount > 0)
+            {
+                AttemptingToPlant = true;
+                TreePlantingRangeVisualizer.SetActive(true);
+            }
+            else
+            {
+                //play failed to spawn tree sound
+            }
+        }
+        if (Input.GetKeyUp(KeyCode.Z) && AttemptingToPlant)
+        {
+            AttemptingToPlant = false;
+            if (TreeManager.Get().TrySpawnTree(TreePlantingRangeVisualizer.transform.position))
+            {
+                AddSeedAmount(-1);
+            }
+            else
+            {
+                //play failed to spawn tree sound
+            }
+            TreePlantingRangeVisualizer.SetActive(false);
+        }
+
         if (Input.GetButtonDown("Jump"))
         {
             if (storeAvailable)
@@ -101,9 +143,10 @@ public class PlayerThreeD : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Store"))
+        if (other.CompareTag("Fruit"))
         {
-
+            AddFruitAmount(1);
+            Destroy(other.gameObject);
         }
     }
 
@@ -118,5 +161,33 @@ public class PlayerThreeD : MonoBehaviour
     void UpdateHealthBar()
     {
         HealthBar.value = Mathf.Clamp(CurrentHealth / MaxHealth, 0.0f, 1.0f);
+    }
+
+
+    void AddSeedAmount(int AmountToAdd)
+    {
+        seedsAmount += AmountToAdd;
+        if (seedsAmount < 0)
+        {
+            seedsAmount = 0;
+        }
+        UpdateSeedsAmountText();
+    }
+    void UpdateSeedsAmountText()
+    {
+        SeedsAmountText.text = seedsAmount.ToString();
+    }
+    void AddFruitAmount(int AmountToAdd)
+    {
+        fruitsAmount += AmountToAdd;
+        if (fruitsAmount < 0)
+        {
+            fruitsAmount = 0;
+        }
+        UpdateFruitsAmountText();
+    }
+    void UpdateFruitsAmountText()
+    {
+        FruitsAmountText.text = fruitsAmount.ToString();
     }
 }

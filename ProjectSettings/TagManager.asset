@@ -7,6 +7,7 @@ TagManager:
   - Fire
   - Store
   - FireSource
+  - Fruit
   layers:
   - Default
   - TransparentFX
