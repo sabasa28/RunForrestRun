@@ -11,6 +11,10 @@ public class CoolerTree : MonoBehaviour
     [SerializeField] GameObject HealthyModel;
     [SerializeField] GameObject DamagedModel;
     [SerializeField] GameObject DeadModel;
+    [SerializeField] float timeBetweenFruitSpawns;
+    [SerializeField] float fruitSpawningRadius;
+    [SerializeField] GameObject fruitPrefab;
+    [SerializeField] float spawnedFruitY;
     enum TreeState
     {
         Healthy,
@@ -18,7 +22,10 @@ public class CoolerTree : MonoBehaviour
         Dead
     }
     TreeState treeState = TreeState.Healthy;
-    // Start is called before the first frame update
+    private void Start()
+    {
+        StartCoroutine(SpawnFruitContinuously());
+    }
     private void FixedUpdate()
     {
         if (burning)
@@ -88,5 +95,23 @@ public class CoolerTree : MonoBehaviour
     {
         yield return new WaitForSeconds(timeBeforeDespawningAfterDead);
         TreeManager.Get().DespawnTree(this);
+    }
+
+    IEnumerator SpawnFruitContinuously()
+    {
+        while (treeState != TreeState.Dead)
+        {
+            yield return new WaitForSeconds(timeBetweenFruitSpawns);
+            SpawnFruit();
+        }
+    }
+
+    void SpawnFruit()
+    {
+        Vector3 randomDir = new(Random.Range(-1.0f, 1.0f), 0.0f, Random.Range(-1.0f, 1.0f));
+        randomDir = randomDir.normalized * Random.Range(1.0f, fruitSpawningRadius);
+        Vector3 spawnFruitPosition = transform.position + randomDir;
+        spawnFruitPosition.y = spawnedFruitY;
+        Instantiate(fruitPrefab, spawnFruitPosition, Quaternion.identity);
     }
 }

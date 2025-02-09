@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using GogoGaga.OptimizedRopesAndCables;
 public class PlayerThreeD : MonoBehaviour
 {
     [SerializeField] float speed;
@@ -20,10 +21,6 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] float MaxHealth;
     [SerializeField] float CurrentHealth;
     [SerializeField] float FireDamage; // xd
-    [SerializeField] float CurrenthoseLength;
-    [SerializeField] Transform HoseBaseTransform;
-    [SerializeField] float HoseRubberStrenght;
-    [SerializeField] float debugDistToHose;
     [SerializeField] bool storeAvailable;
     [SerializeField] bool burning;
     [SerializeField] TextMeshProUGUI SeedsAmountText;
@@ -32,10 +29,19 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] int fruitsAmount;
     bool AttemptingToPlant;
     [SerializeField] GameObject TreePlantingRangeVisualizer;
+    [SerializeField] Rope Hose;
+    [SerializeField] Transform HoseHolder;
+    [SerializeField] float HoseHangingAmount;
+    [SerializeField] float CurrenthoseLength;
+    [SerializeField] float HoseRubberStrenght;
+    [SerializeField] float debugDistToHose;
+    [SerializeField] LayerMask groundLayer;
+    Camera mainCamera;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        mainCamera = Camera.main;
     }
 
     private void Start()
@@ -45,6 +51,7 @@ public class PlayerThreeD : MonoBehaviour
         UpdateSeedsAmountText();
         UpdateFruitsAmountText();
         UpdateHealthBar();
+        StartCoroutine(UpdateHoseLenght());
     }
 
     private void Update() //hice todo un quilombo con las direcciones pero no me voy a poner a arreglarlo, anda
@@ -75,15 +82,26 @@ public class PlayerThreeD : MonoBehaviour
             TreePlantingRangeVisualizer.SetActive(false);
         }
 
+
         if (Input.GetButtonDown("Jump"))
         {
             if (storeAvailable)
             {
                 //open store
             }
-            else
+        }
+        if (Input.GetButtonDown("Fire1"))
+        {
+            if (GetWorldMousePosition(out Vector3 MousePos))
             {
                 shootingWater = true;
+                Vector3 ShootingDir = (MousePos - transform.position);
+                ShootingDir.y = 0.0f;
+                float aux = ShootingDir.z;
+                ShootingDir.z = ShootingDir.x;
+                ShootingDir.x = -aux; //escuchame no tengo mucho tiempo, la razon por la que hice esto es
+                transform.forward = ShootingDir;
+
                 //if (verticalValue > 0.0f || horizontalValue > 0.0f) //esto se usa si queremos que la rotacion al disparar vaya mas bien con los inputs mas que con la direccion
                 //{
                 //    bool bOnXAxis = (Mathf.Abs(verticalValue) > Mathf.Abs(horizontalValue)); //me quedo el right como forward pero me dio fiaca cambiarlo
@@ -95,7 +113,7 @@ public class PlayerThreeD : MonoBehaviour
         }
         if (shootingWater)
         {
-            if (Input.GetButton("Jump"))
+            if (Input.GetButton("Fire1"))
             {
                 timeFillingWater += Time.deltaTime;
                 float scaleToSet = Mathf.InverseLerp(0.0f, timeToFillWater, timeFillingWater);
@@ -130,13 +148,12 @@ public class PlayerThreeD : MonoBehaviour
             }
             Vector3 movement = speed * Time.fixedDeltaTime * new Vector3(verticalValue, 0.0f, -horizontalValue);
             characterController.SimpleMove(movement);
-            float distTohose = Vector3.Distance(HoseBaseTransform.position, transform.position);
+            float distTohose = Vector3.Distance(HoseHolder.position, transform.position);
             debugDistToHose = distTohose;
             if (distTohose > CurrenthoseLength)
             {
-                Vector3 normalVector = (HoseBaseTransform.position - transform.position).normalized;
+                Vector3 normalVector = (HoseHolder.position - transform.position).normalized;
                 characterController.SimpleMove(normalVector * (distTohose - CurrenthoseLength) * HoseRubberStrenght);
-                Debug.Log("Pushed Back " + (normalVector * (distTohose - CurrenthoseLength)));
             }
         }
     }
@@ -189,5 +206,28 @@ public class PlayerThreeD : MonoBehaviour
     void UpdateFruitsAmountText()
     {
         FruitsAmountText.text = fruitsAmount.ToString();
+    }
+    IEnumerator UpdateHoseLenght()
+    {
+        while (true)
+        {
+            Hose.ropeLength = Mathf.Min(Vector3.Distance(transform.position, HoseHolder.position), CurrenthoseLength) * (1.0f + HoseHangingAmount);
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+    private bool GetWorldMousePosition(out Vector3 position)
+    {
+        var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, 100.0f, groundLayer))
+        {
+            position = hitInfo.point;
+            return true;
+        }
+        else
+        {
+            position = Vector3.zero;
+            return false;
+        }
     }
 }

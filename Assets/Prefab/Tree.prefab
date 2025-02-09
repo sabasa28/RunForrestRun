@@ -54,6 +54,10 @@ MonoBehaviour:
   HealthyModel: {fileID: 7740525192507525348}
   DamagedModel: {fileID: 806176514221525306}
   DeadModel: {fileID: 7962515660071252910}
+  timeBetweenFruitSpawns: 20
+  fruitSpawningRadius: 5
+  fruitPrefab: {fileID: 488128486476476431, guid: ccf904f26531c6f46b383011df0c5cae, type: 3}
+  spawnedFruitY: 0.5
 --- !u!65 &4007521073579936360
 BoxCollider:
   m_ObjectHideFlags: 0
