@@ -56,7 +56,7 @@ public class PlayerThreeD : MonoBehaviour
 
     private void Update() //hice todo un quilombo con las direcciones pero no me voy a poner a arreglarlo, anda
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             if (seedsAmount > 0)
             {
@@ -68,7 +68,7 @@ public class PlayerThreeD : MonoBehaviour
                 //play failed to spawn tree sound
             }
         }
-        if (Input.GetKeyUp(KeyCode.Z) && AttemptingToPlant)
+        if (Input.GetKeyUp(KeyCode.Space) && AttemptingToPlant)
         {
             AttemptingToPlant = false;
             if (TreeManager.Get().TrySpawnTree(TreePlantingRangeVisualizer.transform.position))
@@ -139,6 +139,10 @@ public class PlayerThreeD : MonoBehaviour
             CurrentHealth = Mathf.Clamp(CurrentHealth, 0.0f, MaxHealth);
             UpdateHealthBar();
             burning = false;
+            if (CurrentHealth <= 0.0f)
+            {
+                GameplayController.Get().OnLose();
+            }
         }
         if (!shootingWater || canMoveWhileShooting)
         {

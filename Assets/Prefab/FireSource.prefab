@@ -124,6 +124,7 @@ MonoBehaviour:
   maxTimeToSpawn: 20
   timeToExpand: 20
   debugGridPos: {x: 0, y: 0}
+  waterDamage: 25
 --- !u!1001 &7159107859283396255
 PrefabInstance:
   m_ObjectHideFlags: 0

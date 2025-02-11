@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class FireSource : Fire
 {
+    bool watered;
+    float currentHealth;
+    float maxHealth = 100.0f;
+    [SerializeField] float waterDamage;
     enum DirectionsToExpandTo
     {
         UpLeft,
@@ -28,7 +32,14 @@ public class FireSource : Fire
         fireManager.OccupyGridSlot(new((int)(transform.position.x - 0.5f), (int)(transform.position.z + 0.5f)), this);
         fireManager.OccupyGridSlot(new((int)(transform.position.x + 0.5f), (int)(transform.position.z - 0.5f)), this);
         fireManager.OccupyGridSlot(new((int)(transform.position.x + 0.5f), (int)(transform.position.z + 0.5f)), this);
+        fireManager.AddFireSource(this);
         posibleDirections = (int)DirectionsToExpandTo.Num;
+    }
+
+    protected override void Start()
+    {
+        currentHealth = maxHealth;
+        base.Start();
     }
 
     public override Vector2 GetNewPositionFromDirection(int directionsEnumIndex)
@@ -79,5 +90,28 @@ public class FireSource : Fire
         }
         spawnOffset *= 1.5f; // como el fire source tiene mayor escala multiplico el offset
         return new Vector2(transform.position.x, transform.position.z) + spawnOffset;
+    }
+    private void FixedUpdate()
+    {
+        if (watered)
+        {
+            if (currentHealth > 0.0f)
+            {
+                currentHealth -= waterDamage * Time.fixedDeltaTime;
+                if (currentHealth <= 0.0f)
+                {
+                    fireManager.RemoveFireSource(this);
+                    Destroy(gameObject);
+                }
+            }
+            watered = false;
+        }
+    }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Water"))
+        {
+            watered = true;
+        }
     }
 }

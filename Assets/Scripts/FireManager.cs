@@ -5,6 +5,7 @@ using UnityEngine;
 public class FireManager : MonoBehaviour
 {
     Dictionary<Vector2Int, Fire> fires = new();
+    List<FireSource> fireSources = new();
     [SerializeField] Fire fireTemplate;
     [SerializeField] PlayerThreeD player;
     [SerializeField] Vector2Int minLimit;
@@ -64,6 +65,20 @@ public class FireManager : MonoBehaviour
     public void OccupyGridSlot(Vector2Int gridSlot, Fire fire) //used for fires that are already in the level insted of being instanced from this manager 
     {
         fires.Add(gridSlot, fire);
+    }
+
+    public void AddFireSource(FireSource newFireSource)
+    {
+        fireSources.Add(newFireSource);
+    }
+
+    public void RemoveFireSource(FireSource deadFireSource)
+    {
+        fireSources.Remove(deadFireSource);
+        if (fireSources.Count <= 0)
+        {
+            GameplayController.Get().OnWin();
+        }
     }
 
 }
