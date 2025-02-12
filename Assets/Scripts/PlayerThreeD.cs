@@ -21,7 +21,7 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] float MaxHealth;
     [SerializeField] float CurrentHealth;
     [SerializeField] float FireDamage; // xd
-    [SerializeField] bool storeAvailable;
+    bool storeAvailable = false;
     [SerializeField] bool burning;
     [SerializeField] TextMeshProUGUI SeedsAmountText;
     [SerializeField] int seedsAmount;
@@ -37,6 +37,9 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] float debugDistToHose;
     [SerializeField] LayerMask groundLayer;
     Camera mainCamera;
+    [SerializeField] TextMeshProUGUI MoneyAmountText;
+    [SerializeField] int currentMoney;
+    [SerializeField] GameObject StoreMenu;
 
     private void Awake()
     {
@@ -50,6 +53,7 @@ public class PlayerThreeD : MonoBehaviour
         CurrentHealth = MaxHealth;
         UpdateSeedsAmountText();
         UpdateFruitsAmountText();
+        UpdateMoneyAmountText();
         UpdateHealthBar();
         StartCoroutine(UpdateHoseLenght());
     }
@@ -83,14 +87,15 @@ public class PlayerThreeD : MonoBehaviour
         }
 
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             if (storeAvailable)
             {
-                //open store
+                StoreMenu.SetActive(true);
+                Time.timeScale = 0.0f;
             }
         }
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && Time.timeScale != 0.0f)
         {
             if (GetWorldMousePosition(out Vector3 MousePos))
             {
@@ -169,6 +174,22 @@ public class PlayerThreeD : MonoBehaviour
             AddFruitAmount(1);
             Destroy(other.gameObject);
         }
+        if (other.CompareTag("Store"))
+        {
+            storeAvailable = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Store"))
+        {
+            storeAvailable = false;
+            if (StoreMenu.activeInHierarchy)
+            {
+                StoreMenu.SetActive(false);
+            }
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -185,7 +206,7 @@ public class PlayerThreeD : MonoBehaviour
     }
 
 
-    void AddSeedAmount(int AmountToAdd)
+    public void AddSeedAmount(int AmountToAdd)
     {
         seedsAmount += AmountToAdd;
         if (seedsAmount < 0)
@@ -198,6 +219,7 @@ public class PlayerThreeD : MonoBehaviour
     {
         SeedsAmountText.text = seedsAmount.ToString();
     }
+
     void AddFruitAmount(int AmountToAdd)
     {
         fruitsAmount += AmountToAdd;
@@ -211,6 +233,39 @@ public class PlayerThreeD : MonoBehaviour
     {
         FruitsAmountText.text = fruitsAmount.ToString();
     }
+
+    public void AddMoney(int AmountToAdd)
+    {
+        currentMoney += AmountToAdd;
+        if (currentMoney < 0)
+        {
+            currentMoney = 0;
+        }
+        UpdateMoneyAmountText();
+    }
+    void UpdateMoneyAmountText()
+    {
+        MoneyAmountText.text = "$" + currentMoney.ToString();
+    }
+
+    public void AddToSpeed(float speedToAdd)
+    {
+        speed += speedToAdd;
+        if (speed < 0.0f)
+        {
+            speed = 0.0f;
+        }
+    }
+
+    public void AddToHoseLenght(float lenghtToAdd)
+    {
+        CurrenthoseLength += lenghtToAdd;
+        if (CurrenthoseLength < 0.0f)
+        {
+            CurrenthoseLength = 0.0f;
+        }
+    }
+
     IEnumerator UpdateHoseLenght()
     {
         while (true)
@@ -219,6 +274,7 @@ public class PlayerThreeD : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
     }
+
     private bool GetWorldMousePosition(out Vector3 position)
     {
         var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
@@ -233,5 +289,27 @@ public class PlayerThreeD : MonoBehaviour
             position = Vector3.zero;
             return false;
         }
+    }
+
+    public bool TrySpendMoney(int cost)
+    {
+        if (currentMoney >= cost)
+        {
+            currentMoney -= cost;
+            UpdateMoneyAmountText();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public int RemoveAllFruit()
+    {
+        int aux = fruitsAmount;
+        fruitsAmount = 0;
+        UpdateFruitsAmountText();
+        return aux;
     }
 }
