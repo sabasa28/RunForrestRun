@@ -51,8 +51,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 1547827465116678156, guid: bafc1babc5fd97416970652154a90cdb,
-    type: 3}
+  m_Motion: {fileID: 1547827465116678156, guid: 94f758b718da0452ab9f4fab530ac457, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -133,8 +132,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -7981974617819775124, guid: bafc1babc5fd97416970652154a90cdb,
-    type: 3}
+  m_Motion: {fileID: -7981974617819775124, guid: 94f758b718da0452ab9f4fab530ac457, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -254,19 +252,25 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: AgarroManguera
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   - m_Name: Caminar
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
+    m_DefaultBool: 1
+    m_Controller: {fileID: 0}
+  - m_Name: VelocidadCaminar
+    m_Type: 1
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
+    m_Controller: {fileID: 0}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -327,8 +331,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -3085146654365699253, guid: bafc1babc5fd97416970652154a90cdb,
-    type: 3}
+  m_Motion: {fileID: -3085146654365699253, guid: 94f758b718da0452ab9f4fab530ac457, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -352,14 +355,13 @@ AnimatorState:
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
   m_Mirror: 0
-  m_SpeedParameterActive: 0
+  m_SpeedParameterActive: 1
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -8344598656795422658, guid: bafc1babc5fd97416970652154a90cdb,
-    type: 3}
+  m_Motion: {fileID: -8344598656795422658, guid: 94f758b718da0452ab9f4fab530ac457, type: 3}
   m_Tag: 
-  m_SpeedParameter: 
+  m_SpeedParameter: VelocidadCaminar
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 

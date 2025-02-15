@@ -40,6 +40,9 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] TextMeshProUGUI MoneyAmountText;
     [SerializeField] int currentMoney;
     [SerializeField] GameObject StoreMenu;
+    [SerializeField] Animator AnimControl;
+    [SerializeField] bool test;
+    Vector3 movement;
 
     private void Awake()
     {
@@ -135,6 +138,7 @@ public class PlayerThreeD : MonoBehaviour
         moving = Input.GetAxisRaw("Horizontal") != 0.0f || Input.GetAxisRaw("Vertical") != 0.0f;
         horizontalValue = Input.GetAxis("Horizontal");
         verticalValue = Input.GetAxis("Vertical");
+        movement = new Vector3(horizontalValue, 0.0f, verticalValue).normalized;
     }
     void FixedUpdate()
     {
@@ -153,7 +157,7 @@ public class PlayerThreeD : MonoBehaviour
         {
             if (moving && (Mathf.Abs(horizontalValue) > 0.01f || Mathf.Abs(verticalValue) > 0.01f))
             {
-                transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, new Vector3(horizontalValue, 0.0f, verticalValue), rotationSpeed * Time.fixedDeltaTime), Vector3.up); //no se si este uso de deltatime esta del todo bien
+                transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, new Vector3(horizontalValue, 0.0f, verticalValue).normalized, rotationSpeed * Time.fixedDeltaTime), Vector3.up); //no se si este uso de deltatime esta del todo bien
             }
             Vector3 movement = speed * Time.fixedDeltaTime * new Vector3(verticalValue, 0.0f, -horizontalValue);
             characterController.SimpleMove(movement);
@@ -165,6 +169,8 @@ public class PlayerThreeD : MonoBehaviour
                 characterController.SimpleMove(normalVector * (distTohose - CurrenthoseLength) * HoseRubberStrenght);
             }
         }
+        AnimControl.SetBool("Caminar", moving);
+        AnimControl.SetBool("AgarroManguera", test);
     }
 
     private void OnTriggerEnter(Collider other)
