@@ -7,11 +7,11 @@ using GogoGaga.OptimizedRopesAndCables;
 public class PlayerThreeD : MonoBehaviour
 {
     [SerializeField] float speed;
+    float initialSpeed;
+    [SerializeField] float animSpeedMultiplier;
     [SerializeField] float rotationSpeed;
     bool shootingWater;
     [SerializeField] bool canMoveWhileShooting;
-    float horizontalValue;
-    float verticalValue;
     bool moving;
     [SerializeField] GameObject water;
     [SerializeField] float timeToFillWater;
@@ -54,6 +54,7 @@ public class PlayerThreeD : MonoBehaviour
     {
         TreePlantingRangeVisualizer.transform.localScale = Vector3.one * 2 * TreeManager.Get().GetMinDistanceBetweenTrees(); //multiplicamos por dos porque la distancia es el radio y la escala el diametro 
         CurrentHealth = MaxHealth;
+        initialSpeed = speed;
         UpdateSeedsAmountText();
         UpdateFruitsAmountText();
         UpdateMoneyAmountText();
@@ -63,6 +64,8 @@ public class PlayerThreeD : MonoBehaviour
 
     private void Update() //hice todo un quilombo con las direcciones pero no me voy a poner a arreglarlo, anda
     {
+        float horizontalValue;
+        float verticalValue;
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (seedsAmount > 0)
@@ -138,7 +141,9 @@ public class PlayerThreeD : MonoBehaviour
         moving = Input.GetAxisRaw("Horizontal") != 0.0f || Input.GetAxisRaw("Vertical") != 0.0f;
         horizontalValue = Input.GetAxis("Horizontal");
         verticalValue = Input.GetAxis("Vertical");
-        movement = new Vector3(horizontalValue, 0.0f, verticalValue).normalized;
+
+        float magnitudeMovement = Mathf.Max(Mathf.Abs(horizontalValue), Mathf.Abs(verticalValue));
+        movement = new Vector3(horizontalValue, 0.0f, verticalValue).normalized * magnitudeMovement;
     }
     void FixedUpdate()
     {
@@ -155,12 +160,12 @@ public class PlayerThreeD : MonoBehaviour
         }
         if (!shootingWater || canMoveWhileShooting)
         {
-            if (moving && (Mathf.Abs(horizontalValue) > 0.01f || Mathf.Abs(verticalValue) > 0.01f))
+            if (moving && (Mathf.Abs(movement.x) > 0.01f || Mathf.Abs(movement.z) > 0.01f))
             {
-                transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, new Vector3(horizontalValue, 0.0f, verticalValue).normalized, rotationSpeed * Time.fixedDeltaTime), Vector3.up); //no se si este uso de deltatime esta del todo bien
+                transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, new Vector3(movement.x, 0.0f, movement.z).normalized, rotationSpeed * Time.fixedDeltaTime), Vector3.up); //no se si este uso de deltatime esta del todo bien
             }
-            Vector3 movement = speed * Time.fixedDeltaTime * new Vector3(verticalValue, 0.0f, -horizontalValue);
-            characterController.SimpleMove(movement);
+            Vector3 finalMovement = speed * Time.fixedDeltaTime * new Vector3(movement.z, 0.0f, -movement.x);
+            characterController.SimpleMove(finalMovement);
             float distTohose = Vector3.Distance(HoseHolder.position, transform.position);
             debugDistToHose = distTohose;
             if (distTohose > CurrenthoseLength)
@@ -171,6 +176,7 @@ public class PlayerThreeD : MonoBehaviour
         }
         AnimControl.SetBool("Caminar", moving);
         AnimControl.SetBool("AgarroManguera", test);
+        AnimControl.SetFloat("VelocidadCaminar", (movement.magnitude * speed) / initialSpeed * animSpeedMultiplier);
     }
 
     private void OnTriggerEnter(Collider other)
