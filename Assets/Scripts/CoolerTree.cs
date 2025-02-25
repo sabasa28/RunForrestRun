@@ -4,26 +4,63 @@ using UnityEngine;
 
 public class CoolerTree : MonoBehaviour
 {
-    bool burning = false;
-    float currentHealth = 100;
-    [SerializeField] float fireDamage; // :)
-    [SerializeField] float timeBeforeDespawningAfterDead;
-    [SerializeField] GameObject HealthyModel;
-    [SerializeField] GameObject DamagedModel;
-    [SerializeField] GameObject DeadModel;
-    [SerializeField] float timeBetweenFruitSpawns;
-    [SerializeField] float fruitSpawningRadius;
-    [SerializeField] GameObject fruitPrefab;
-    [SerializeField] float spawnedFruitY;
+    enum TreeType
+    { 
+        NotSet = 0,
+        Ciruelo,
+        Durazno,
+        Manzana,
+        Num
+    }
     enum TreeState
     {
         Healthy,
         Damaged,
         Dead
     }
+
+    bool burning = false;
+    float currentHealth = 100;
+    [SerializeField] float fireDamage; // :)
+    [SerializeField] float timeBeforeDespawningAfterDead;
+    [SerializeField] GameObject HealthyModel1;
+    [SerializeField] GameObject DamagedModel1;
+    [SerializeField] GameObject HealthyModel2;
+    [SerializeField] GameObject DamagedModel2;
+    [SerializeField] GameObject HealthyModel3;
+    [SerializeField] GameObject DamagedModel3;
+    [SerializeField] GameObject DeadModel;
+    GameObject HealthyModel;
+    GameObject DamagedModel;
+    [SerializeField] float timeBetweenFruitSpawns;
+    [SerializeField] float fruitSpawningRadius;
+    [SerializeField] Fruit FruitPrefab;
+    [SerializeField] float spawnedFruitY;
+    TreeType TypeOfTree = TreeType.NotSet;
     TreeState treeState = TreeState.Healthy;
     private void Start()
     {
+        if (TypeOfTree == TreeType.NotSet)
+        {
+            TypeOfTree = (TreeType)Random.Range((int)TreeType.NotSet + 1 , (int)TreeType.Num);
+        }
+        switch (TypeOfTree)
+        {
+            case TreeType.Ciruelo:
+                HealthyModel = HealthyModel1;
+                DamagedModel = DamagedModel1;
+                break;
+            case TreeType.Durazno:
+                HealthyModel = HealthyModel2;
+                DamagedModel = DamagedModel2;
+                break;
+            default:
+            case TreeType.Manzana:
+                HealthyModel = HealthyModel3;
+                DamagedModel = DamagedModel3;
+                break;
+        }
+        UpdateState(TreeState.Healthy);
         StartCoroutine(SpawnFruitContinuously());
     }
     private void FixedUpdate()
@@ -68,6 +105,9 @@ public class CoolerTree : MonoBehaviour
     void UpdateState(TreeState newTreeState)
     {
         treeState = newTreeState;
+        HealthyModel1.SetActive(false);
+        HealthyModel2.SetActive(false);
+        HealthyModel3.SetActive(false);
         switch (treeState)
         {
             case TreeState.Healthy:
@@ -112,6 +152,7 @@ public class CoolerTree : MonoBehaviour
         randomDir = randomDir.normalized * Random.Range(1.0f, fruitSpawningRadius);
         Vector3 spawnFruitPosition = transform.position + randomDir;
         spawnFruitPosition.y = spawnedFruitY;
-        Instantiate(fruitPrefab, spawnFruitPosition, Quaternion.identity);
+        Fruit spawnedFruit = Instantiate<Fruit>(FruitPrefab, spawnFruitPosition, Quaternion.identity);
+        spawnedFruit.SetModel((int)TypeOfTree);
     }
 }

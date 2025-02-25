@@ -162,9 +162,9 @@ public class PlayerThreeD : MonoBehaviour
         {
             if (moving && (Mathf.Abs(movement.x) > 0.01f || Mathf.Abs(movement.z) > 0.01f))
             {
-                transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, new Vector3(movement.x, 0.0f, movement.z).normalized, rotationSpeed * Time.fixedDeltaTime), Vector3.up); //no se si este uso de deltatime esta del todo bien
+                transform.rotation = Quaternion.LookRotation(Vector3.Slerp(transform.forward, new Vector3(-movement.z, 0.0f, movement.x).normalized, rotationSpeed * Time.fixedDeltaTime), Vector3.up); //no se si este uso de deltatime esta del todo bien
             }
-            Vector3 finalMovement = speed * Time.fixedDeltaTime * new Vector3(movement.z, 0.0f, -movement.x);
+            Vector3 finalMovement = speed * Time.fixedDeltaTime * new Vector3(movement.x, 0.0f, movement.z);
             characterController.SimpleMove(finalMovement);
             float distTohose = Vector3.Distance(HoseHolder.position, transform.position);
             debugDistToHose = distTohose;

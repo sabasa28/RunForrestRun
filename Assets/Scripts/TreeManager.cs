@@ -7,8 +7,10 @@ public class TreeManager : MonoBehaviour
     List<CoolerTree> SpawnedTrees = new List<CoolerTree>();
     [SerializeField] float yToSpawnTrees;
     [SerializeField] float minDistanceBetweenTrees;
+    [SerializeField] float minDistanceToHouse;
     [SerializeField] CoolerTree treePrefab;
     static TreeManager instance;
+    Vector3 housePosition;
 
     public static TreeManager Get()
     {
@@ -29,6 +31,7 @@ public class TreeManager : MonoBehaviour
     void Start()
     {
         SpawnedTrees.AddRange(FindObjectsOfType<CoolerTree>());
+        housePosition = FindObjectOfType<House>().transform.position;
     }
 
     // devuelve true si se pudo spawnear el arbol
@@ -42,6 +45,10 @@ public class TreeManager : MonoBehaviour
                 //play 
                 return false;
             }
+        }
+        if (Vector3.Distance(PosToSpawn, housePosition) < minDistanceToHouse)
+        {
+            return false;
         }
         SpawnTree(PosToSpawn);
         return true;
