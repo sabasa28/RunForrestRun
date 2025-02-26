@@ -43,6 +43,7 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] Animator AnimControl;
     [SerializeField] bool test;
     Vector3 movement;
+    [SerializeField] WaterTaxes waterTaxes;
 
     private void Awake()
     {
@@ -101,11 +102,12 @@ public class PlayerThreeD : MonoBehaviour
                 Time.timeScale = 0.0f;
             }
         }
-        if (Input.GetButtonDown("Fire1") && Time.timeScale != 0.0f)
+        if (Input.GetButtonDown("Fire1") && Time.timeScale != 0.0f && currentMoney >= 0)
         {
             if (GetWorldMousePosition(out Vector3 MousePos))
             {
                 shootingWater = true;
+                waterTaxes.SetUsingWater(shootingWater);
                 Vector3 ShootingDir = (MousePos - transform.position);
                 ShootingDir.y = 0.0f;
                 float aux = ShootingDir.z;
@@ -124,7 +126,7 @@ public class PlayerThreeD : MonoBehaviour
         }
         if (shootingWater)
         {
-            if (Input.GetButton("Fire1"))
+            if (Input.GetButton("Fire1") && currentMoney >= 0)
             {
                 timeFillingWater += Time.deltaTime;
                 float scaleToSet = Mathf.InverseLerp(0.0f, timeToFillWater, timeFillingWater);
@@ -135,6 +137,7 @@ public class PlayerThreeD : MonoBehaviour
                 water.SetActive(false);
                 water.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
                 shootingWater = false;
+                waterTaxes.SetUsingWater(shootingWater);
                 timeFillingWater = 0.0f;
             }
         }
@@ -171,7 +174,7 @@ public class PlayerThreeD : MonoBehaviour
             if (distTohose > CurrenthoseLength)
             {
                 Vector3 normalVector = (HoseHolder.position - transform.position).normalized;
-                characterController.SimpleMove(normalVector * (distTohose - CurrenthoseLength) * HoseRubberStrenght);
+                characterController.SimpleMove((distTohose - CurrenthoseLength) * HoseRubberStrenght * normalVector);
             }
         }
         AnimControl.SetBool("Caminar", moving);
@@ -249,15 +252,19 @@ public class PlayerThreeD : MonoBehaviour
     public void AddMoney(int AmountToAdd)
     {
         currentMoney += AmountToAdd;
-        if (currentMoney < 0)
-        {
-            currentMoney = 0;
-        }
         UpdateMoneyAmountText();
     }
     void UpdateMoneyAmountText()
     {
         MoneyAmountText.text = "$" + currentMoney.ToString();
+        if (currentMoney >= 0)
+        {
+            MoneyAmountText.color = Color.white;
+        }
+        else 
+        {
+            MoneyAmountText.color = Color.red;
+        }
     }
 
     public void AddToSpeed(float speedToAdd)

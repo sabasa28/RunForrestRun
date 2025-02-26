@@ -13,7 +13,7 @@ public class UIMainMenu : MonoBehaviour
 
     public void GoToGameplayScene()
     {
-        SceneManager.LoadScene("Gameplay");
+        SceneManager.LoadScene("Tutorial");
     }
 
     public void CloseGame()

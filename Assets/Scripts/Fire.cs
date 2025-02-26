@@ -23,6 +23,12 @@ public class Fire : MonoBehaviour
     public Vector2Int debugGridPos;
     protected int[] orderToCheck;
     protected int posibleDirections = (int)DirectionsToExpandTo.Num;
+    float timerForAnim = 0.0f;
+    [SerializeField] float timeBetweenAnimationFrames;
+    [SerializeField] GameObject[] frames;
+    int currentAnimationFrame = 0;
+    [SerializeField] bool TEST_CAMBIANDO_MODELOS;
+
     protected virtual void Start()
     {
         orderToCheck = new int[posibleDirections];
@@ -31,7 +37,33 @@ public class Fire : MonoBehaviour
             orderToCheck[i] = i;
         }
         timeToExpand = Random.Range(minTimeToSpawn, maxTimeToSpawn);
+        if (TEST_CAMBIANDO_MODELOS && frames.Length > 0)
+        {
+            currentAnimationFrame = Random.Range(0, frames.Length);
+            frames[currentAnimationFrame].SetActive(true);
+        }
+        timerForAnim = Random.Range(0.0f, timeBetweenAnimationFrames);
         StartCoroutine(ExpandOnTimer());
+    }
+
+    private void FixedUpdate()
+    {
+        if (!TEST_CAMBIANDO_MODELOS) return;
+
+        timerForAnim += Time.fixedDeltaTime;
+        if (timerForAnim >= timeBetweenAnimationFrames)
+        {
+            timerForAnim = 0.0f;
+            currentAnimationFrame++;
+            if (currentAnimationFrame >= frames.Length)
+            {
+                currentAnimationFrame = 0;
+            }
+            for (int i = 0; i < frames.Length; i++)
+            {
+                frames[i].SetActive(i == currentAnimationFrame);
+            }
+        }
     }
 
     protected IEnumerator ExpandOnTimer()
