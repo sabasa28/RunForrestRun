@@ -41,7 +41,11 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] int currentMoney;
     [SerializeField] GameObject StoreMenu;
     [SerializeField] Animator AnimControl;
-    [SerializeField] bool test;
+    [SerializeField] bool bIsHoldingHose;
+    bool bIsInRangeOfHoseBase = false;
+    [SerializeField] Transform HoseHoldingPoint;
+    [SerializeField] GameObject HoseEndModel;
+    Vector3 hoseHoldingPointOrigin;
     Vector3 movement;
     [SerializeField] WaterTaxes waterTaxes;
 
@@ -56,6 +60,8 @@ public class PlayerThreeD : MonoBehaviour
         TreePlantingRangeVisualizer.transform.localScale = Vector3.one * 2 * TreeManager.Get().GetMinDistanceBetweenTrees(); //multiplicamos por dos porque la distancia es el radio y la escala el diametro 
         CurrentHealth = MaxHealth;
         initialSpeed = speed;
+        hoseHoldingPointOrigin = HoseHoldingPoint.localPosition;
+        ChangeHoseHoldingState(bIsHoldingHose);
         UpdateSeedsAmountText();
         UpdateFruitsAmountText();
         UpdateMoneyAmountText();
@@ -101,8 +107,12 @@ public class PlayerThreeD : MonoBehaviour
                 StoreMenu.SetActive(true);
                 Time.timeScale = 0.0f;
             }
+            if (bIsInRangeOfHoseBase)
+            {
+                ChangeHoseHoldingState(!bIsHoldingHose);
+            }
         }
-        if (Input.GetButtonDown("Fire1") && Time.timeScale != 0.0f && currentMoney >= 0)
+        if (Input.GetButtonDown("Fire1") && Time.timeScale != 0.0f && currentMoney >= 0 && bIsHoldingHose)
         {
             if (GetWorldMousePosition(out Vector3 MousePos))
             {
@@ -126,7 +136,7 @@ public class PlayerThreeD : MonoBehaviour
         }
         if (shootingWater)
         {
-            if (Input.GetButton("Fire1") && currentMoney >= 0)
+            if (Input.GetButton("Fire1") && currentMoney >= 0 && bIsHoldingHose)
             {
                 timeFillingWater += Time.deltaTime;
                 float scaleToSet = Mathf.InverseLerp(0.0f, timeToFillWater, timeFillingWater);
@@ -171,14 +181,14 @@ public class PlayerThreeD : MonoBehaviour
             characterController.SimpleMove(finalMovement);
             float distTohose = Vector3.Distance(HoseHolder.position, transform.position);
             debugDistToHose = distTohose;
-            if (distTohose > CurrenthoseLength)
+            if (distTohose > CurrenthoseLength && bIsHoldingHose)
             {
                 Vector3 normalVector = (HoseHolder.position - transform.position).normalized;
                 characterController.SimpleMove((distTohose - CurrenthoseLength) * HoseRubberStrenght * normalVector);
             }
         }
         AnimControl.SetBool("Caminar", moving);
-        AnimControl.SetBool("AgarroManguera", test);
+        AnimControl.SetBool("AgarroManguera", bIsHoldingHose);
         AnimControl.SetFloat("VelocidadCaminar", (movement.magnitude * speed) / initialSpeed * animSpeedMultiplier);
     }
 
@@ -193,6 +203,10 @@ public class PlayerThreeD : MonoBehaviour
         {
             storeAvailable = true;
         }
+        if (other.CompareTag("Hose"))
+        {
+            bIsInRangeOfHoseBase = true;
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -204,6 +218,10 @@ public class PlayerThreeD : MonoBehaviour
             {
                 StoreMenu.SetActive(false);
             }
+        }
+        if (other.CompareTag("Hose") && bIsInRangeOfHoseBase)
+        {
+            bIsInRangeOfHoseBase = false;
         }
     }
 
@@ -291,6 +309,23 @@ public class PlayerThreeD : MonoBehaviour
         {
             Hose.ropeLength = Mathf.Min(Vector3.Distance(transform.position, HoseHolder.position), CurrenthoseLength) * (1.0f + HoseHangingAmount);
             yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    void ChangeHoseHoldingState(bool newHoldingState)
+    {
+        bIsHoldingHose = newHoldingState;
+        if (bIsHoldingHose)
+        {
+            HoseHoldingPoint.parent = transform;
+            HoseHoldingPoint.SetLocalPositionAndRotation(hoseHoldingPointOrigin, Quaternion.identity);
+            HoseEndModel.SetActive(true);
+        }
+        else
+        {
+            HoseHoldingPoint.parent = HoseHolder;
+            HoseHoldingPoint.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+            HoseEndModel.SetActive(false);
         }
     }
 

@@ -9,6 +9,8 @@ public class TreeManager : MonoBehaviour
     [SerializeField] float minDistanceBetweenTrees;
     [SerializeField] float minDistanceToHouse;
     [SerializeField] CoolerTree treePrefab;
+    [SerializeField] Vector2 minLimit;
+    [SerializeField] Vector2 maxLimit;
     static TreeManager instance;
     Vector3 housePosition;
 
@@ -46,12 +48,17 @@ public class TreeManager : MonoBehaviour
                 return false;
             }
         }
-        if (Vector3.Distance(PosToSpawn, housePosition) < minDistanceToHouse)
+        if (Vector3.Distance(PosToSpawn, housePosition) < minDistanceToHouse || !PosIsWithinLimits(PosToSpawn))
         {
             return false;
         }
         SpawnTree(PosToSpawn);
         return true;
+    }
+
+    bool PosIsWithinLimits(Vector3 pos)
+    {
+        return (pos.x > minLimit.x && pos.x < maxLimit.x && pos.z > minLimit.y && pos.z < maxLimit.y);
     }
 
     void SpawnTree(Vector3 PosToSpawn)

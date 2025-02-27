@@ -9,6 +9,7 @@ TagManager:
   - FireSource
   - Fruit
   - Water
+  - Hose
   layers:
   - Default
   - TransparentFX
