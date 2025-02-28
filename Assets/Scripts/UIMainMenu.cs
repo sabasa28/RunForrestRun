@@ -6,6 +6,7 @@ public class UIMainMenu : MonoBehaviour
 {
     [SerializeField] GameObject InstructionsPanel;
     [SerializeField] GameObject CreditsPanel;
+    [SerializeField] GameObject PlayPanel;
 
     public void ShowInstructions(bool bShouldShow)
     {
@@ -33,10 +34,34 @@ public class UIMainMenu : MonoBehaviour
         CreditsPanel.SetActive(bShouldShow);
     }
 
-    public void GoToGameplayScene()
+    public void ShowPlayOptions(bool bShouldShow)
+    {
+        if (bShouldShow)
+        {
+            AudioManager.Get().PlayUISelect();
+        }
+        else
+        {
+            AudioManager.Get().PlayUIBack();
+        }
+        PlayPanel.SetActive(bShouldShow);
+    }
+
+    public void GoToGameplayEasyScene()
     {
         AudioManager.Get().PlayUISelect();
         SceneManager.LoadScene("Tutorial");
+    }
+
+    public void GoToGameplayMediumScene()
+    {
+        AudioManager.Get().PlayUISelect();
+        SceneManager.LoadScene("Facil");
+    }
+    public void GoToGameplayHardScene()
+    {
+        AudioManager.Get().PlayUISelect();
+        SceneManager.LoadScene("Dificil");
     }
 
     public void CloseGame()

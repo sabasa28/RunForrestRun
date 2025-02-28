@@ -19,7 +19,6 @@ public class UISalesman : MonoBehaviour
     [SerializeField] TextMeshProUGUI SeedDescription;
     [SerializeField] TextMeshProUGUI HoseDescription;
     [SerializeField] TextMeshProUGUI SneakersDescription;
-    [SerializeField] float SFXvolume;
     [SerializeField] AudioClip noMoneyClip;
     [SerializeField] AudioClip yesMoneyClip;
     [SerializeField] AudioClip getMoneyClip;

@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8988fbf749c0e444f94ae4a69b400273, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeBetweenTaxes: 10
+  timeBetweenTaxes: 30
   moneyPerSecondOfWater: 1
   moneyOwedThisTax: 0
   CurrentTaxDebtText: {fileID: 0}

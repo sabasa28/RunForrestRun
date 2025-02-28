@@ -17,8 +17,8 @@ public class Fire : MonoBehaviour
         Num
     }
     public FireManager fireManager;
-    [SerializeField] protected float minTimeToSpawn;
-    [SerializeField] protected float maxTimeToSpawn;
+    public float minTimeToSpawn;
+    public float maxTimeToSpawn;
     [SerializeField] protected float timeToExpand;
     public Vector2Int debugGridPos;
     protected int[] orderToCheck;

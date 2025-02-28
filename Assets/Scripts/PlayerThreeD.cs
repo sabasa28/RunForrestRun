@@ -53,6 +53,8 @@ public class PlayerThreeD : MonoBehaviour
 
     [SerializeField] AudioClip grabFruitSound;
     [SerializeField, Range(0.0f, 1.0f)] float fruitGrabVolume;
+    [SerializeField] AudioClip failedPlant;
+    [SerializeField, Range(0.0f, 1.0f)] float failVolume;
     [SerializeField] AudioSource waterAudioSource;
     [SerializeField] AudioClip shootWaterSound;
     [SerializeField, Range(0.0f, 1.0f)] float waterVolume;
@@ -114,7 +116,7 @@ public class PlayerThreeD : MonoBehaviour
             }
             else
             {
-                //play failed to spawn tree sound
+                AudioManager.Get().PlaySFX(failedPlant, failVolume);
             }
             TreePlantingRangeVisualizer.SetActive(false);
         }

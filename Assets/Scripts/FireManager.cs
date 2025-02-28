@@ -11,6 +11,8 @@ public class FireManager : MonoBehaviour
     [SerializeField] Vector2Int minLimit;
     [SerializeField] Vector2Int maxLimit;
     [SerializeField] float maxInitialDistanceToPlayer;
+    public float minTimeToSpawn = 10.0f;
+    public float maxTimeToSpawn = 20.0f;
 
     private void Start()
     {
@@ -44,7 +46,9 @@ public class FireManager : MonoBehaviour
     {
         Fire spawnedFire = Instantiate(fireTemplate, new Vector3(gridSlot.x, 0.5f, gridSlot.y), Quaternion.identity);
         spawnedFire.fireManager = this;
-        spawnedFire.debugGridPos = gridSlot; 
+        spawnedFire.debugGridPos = gridSlot;
+        spawnedFire.minTimeToSpawn = minTimeToSpawn;
+        spawnedFire.maxTimeToSpawn = maxTimeToSpawn;
         fires.Add(gridSlot, spawnedFire);
     }
 
