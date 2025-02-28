@@ -23,6 +23,7 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] float FireDamage; // xd
     bool storeAvailable = false;
     [SerializeField] bool burning;
+    bool burningLastFrame = false;
     [SerializeField] TextMeshProUGUI SeedsAmountText;
     [SerializeField] int seedsAmount;
     [SerializeField] TextMeshProUGUI FruitsAmountText;
@@ -50,6 +51,15 @@ public class PlayerThreeD : MonoBehaviour
     [SerializeField] WaterTaxes waterTaxes;
     public bool initialAnimationOver = false;
 
+    [SerializeField] AudioClip grabFruitSound;
+    [SerializeField, Range(0.0f, 1.0f)] float fruitGrabVolume;
+    [SerializeField] AudioSource waterAudioSource;
+    [SerializeField] AudioClip shootWaterSound;
+    [SerializeField, Range(0.0f, 1.0f)] float waterVolume;
+    [SerializeField] AudioSource hurtAudioSource;
+    [SerializeField] AudioClip getHurtSound;
+    [SerializeField, Range(0.0f, 1.0f)] float oofVolume;
+
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
@@ -62,6 +72,11 @@ public class PlayerThreeD : MonoBehaviour
         CurrentHealth = MaxHealth;
         initialSpeed = speed;
         hoseHoldingPointOrigin = HoseHoldingPoint.localPosition;
+        waterAudioSource.clip = shootWaterSound;
+        hurtAudioSource.clip = getHurtSound;
+        hurtAudioSource.loop = true;
+        waterAudioSource.volume = waterVolume;
+        hurtAudioSource.volume = oofVolume;
         ChangeHoseHoldingState(bIsHoldingHose);
         UpdateSeedsAmountText();
         UpdateFruitsAmountText();
@@ -122,6 +137,7 @@ public class PlayerThreeD : MonoBehaviour
             if (GetWorldMousePosition(out Vector3 MousePos))
             {
                 shootingWater = true;
+                waterAudioSource.Play();
                 waterTaxes.SetUsingWater(shootingWater);
                 Vector3 ShootingDir = (MousePos - transform.position);
                 ShootingDir.y = 0.0f;
@@ -152,6 +168,7 @@ public class PlayerThreeD : MonoBehaviour
                 water.SetActive(false);
                 water.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
                 shootingWater = false;
+                waterAudioSource.Stop();
                 waterTaxes.SetUsingWater(shootingWater);
                 timeFillingWater = 0.0f;
             }
@@ -165,17 +182,28 @@ public class PlayerThreeD : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if (burning && !burningLastFrame)
+        {
+            hurtAudioSource.Play();
+        }
+        else if (burningLastFrame && !burning)
+        {
+            hurtAudioSource.Stop();
+        }
+        burningLastFrame = burning;
         if (burning)
         {
+            burning = false;
             CurrentHealth -= FireDamage * Time.fixedDeltaTime;
             CurrentHealth = Mathf.Clamp(CurrentHealth, 0.0f, MaxHealth);
             UpdateHealthBar();
-            burning = false;
             if (CurrentHealth <= 0.0f)
             {
+                hurtAudioSource.Stop();
                 GameplayController.Get().OnLose();
             }
         }
+
         if (!shootingWater || canMoveWhileShooting)
         {
             if (moving && (Mathf.Abs(movement.x) > 0.01f || Mathf.Abs(movement.z) > 0.01f))
@@ -202,6 +230,7 @@ public class PlayerThreeD : MonoBehaviour
         if (other.CompareTag("Fruit"))
         {
             AddFruitAmount(1);
+            AudioManager.Get().PlaySFX(grabFruitSound, fruitGrabVolume);
             Destroy(other.gameObject);
         }
         if (other.CompareTag("Store"))
@@ -232,7 +261,7 @@ public class PlayerThreeD : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (other.CompareTag("Fire"))
+        if (other.CompareTag("Fire") && burning == false)
         {
             burning = true;
         }

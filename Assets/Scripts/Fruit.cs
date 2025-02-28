@@ -7,6 +7,7 @@ public class Fruit : MonoBehaviour
     [SerializeField] GameObject Model1;
     [SerializeField] GameObject Model2;
     [SerializeField] GameObject Model3;
+
     public void SetModel(int type)
     {
         switch (type)

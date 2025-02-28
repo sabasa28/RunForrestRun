@@ -82,6 +82,7 @@ MonoBehaviour:
   Model1: {fileID: 4894709425834860133}
   Model2: {fileID: 4457317148899768746}
   Model3: {fileID: 9181001173612727854}
+  audioClip: {fileID: 8300000, guid: e56d76b59c502384d9179e0182cfda0b, type: 3}
 --- !u!54 &4752315243628293113
 Rigidbody:
   m_ObjectHideFlags: 0

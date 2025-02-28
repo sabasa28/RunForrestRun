@@ -54,23 +54,27 @@ public class GameplayController : MonoBehaviour
     {
         WinPanel.SetActive(true);
         Time.timeScale = 0.0f;
+        AudioManager.Get().PauseMusic(true);
     }
 
     public void OnLose()
     {
         LosePanel.SetActive(true);
         Time.timeScale = 0.0f;
+        AudioManager.Get().PauseMusic(true);
     }
 
     public void ChangePauseState(bool newState)
     {
         bIsGamePaused = newState;
         Time.timeScale = bIsGamePaused ? 0.0f : 1.0f;
+        AudioManager.Get().PauseMusic(newState);
         PausePanel.SetActive(bIsGamePaused);
     }
 
     public void GoToMainMenu()
     {
+        AudioManager.Get().PlayUISelect();
         SceneManager.LoadScene("Menu");
     }
 }

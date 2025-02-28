@@ -19,13 +19,26 @@ public class UISalesman : MonoBehaviour
     [SerializeField] TextMeshProUGUI SeedDescription;
     [SerializeField] TextMeshProUGUI HoseDescription;
     [SerializeField] TextMeshProUGUI SneakersDescription;
+    [SerializeField] float SFXvolume;
+    [SerializeField] AudioClip noMoneyClip;
+    [SerializeField] AudioClip yesMoneyClip;
+    [SerializeField] AudioClip getMoneyClip;
     private void Awake()
     {
         UpdatePricesText();
     }
     public void SellFruit()
     {
-        player.AddMoney(player.RemoveAllFruit() * moneyPerFruit);
+        int fruitSold = player.RemoveAllFruit();
+        player.AddMoney(fruitSold * moneyPerFruit);
+        if (fruitSold > 0)
+        {
+            PlayRichSound();
+        }
+        else
+        {
+            PlayPoorSound();
+        }
     }
     public void BuySeed()
     {
@@ -34,6 +47,11 @@ public class UISalesman : MonoBehaviour
             player.AddSeedAmount(1);
             moneyPerSeed += inflationPerSeed;
             UpdatePricesText();
+            PlayBuySound();
+        }
+        else
+        {
+            PlayPoorSound();
         }
     }
     public void BuySneakersUpgrade()
@@ -43,6 +61,11 @@ public class UISalesman : MonoBehaviour
             player.AddToSpeed(speedPerSneakersUpgrade);
             moneyPerSneakersUpgrade += inflationPerSneakersUpgrade;
             UpdatePricesText();
+            PlayBuySound();
+        }
+        else
+        {
+            PlayPoorSound();
         }
     }
     public void BuyHoseUpgrade()
@@ -52,12 +75,18 @@ public class UISalesman : MonoBehaviour
             player.AddToHoseLenght(hoseMetersPerUpgrade);
             moneyPerHoseUpgrade += inflationPerHoseUpgrade;
             UpdatePricesText();
+            PlayBuySound();
+        }
+        else
+        {
+            PlayPoorSound();
         }
     }
     public void CloseSalesman()
     {
         Time.timeScale = 1.0f;
         gameObject.SetActive(false);
+        AudioManager.Get().PlayUIBack();
     }
 
     void UpdatePricesText()
@@ -67,4 +96,19 @@ public class UISalesman : MonoBehaviour
         HoseDescription.text = "$" + moneyPerHoseUpgrade + " cada " + hoseMetersPerUpgrade + " metros";
         SneakersDescription.text = "$" + moneyPerSneakersUpgrade + " cada mejora";
     }
+
+    void PlayBuySound()
+    {
+        AudioManager.Get().PlaySFX(yesMoneyClip, 0.2f);
+    }
+
+    void PlayPoorSound()
+    {
+        AudioManager.Get().PlaySFX(noMoneyClip, 0.2f);
+    }
+    void PlayRichSound()
+    {
+        AudioManager.Get().PlaySFX(getMoneyClip, 0.2f);
+    }
+
 }

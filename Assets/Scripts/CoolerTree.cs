@@ -38,6 +38,8 @@ public class CoolerTree : MonoBehaviour
     [SerializeField] float spawnedFruitY;
     TreeType TypeOfTree = TreeType.NotSet;
     TreeState treeState = TreeState.Healthy;
+    [SerializeField] AudioClip dieAudio;
+    [SerializeField, Range(0.0f, 1.0f)] float audioVolume;
     private void Start()
     {
         if (TypeOfTree == TreeType.NotSet)
@@ -116,11 +118,13 @@ public class CoolerTree : MonoBehaviour
                 DeadModel.SetActive(false);
                 break;
             case TreeState.Damaged:
+                AudioManager.Get().PlaySFX(dieAudio, audioVolume);
                 HealthyModel.SetActive(false);
                 DamagedModel.SetActive(true);
                 DeadModel.SetActive(false);
                 break;
             case TreeState.Dead:
+                AudioManager.Get().PlaySFX(dieAudio, audioVolume);
                 HealthyModel.SetActive(false);
                 DamagedModel.SetActive(false);
                 DeadModel.SetActive(true);
@@ -134,6 +138,7 @@ public class CoolerTree : MonoBehaviour
     IEnumerator DespawnTree()
     {
         yield return new WaitForSeconds(timeBeforeDespawningAfterDead);
+        AudioManager.Get().PlaySFX(dieAudio, audioVolume);
         TreeManager.Get().DespawnTree(this);
     }
 

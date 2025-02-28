@@ -69,6 +69,8 @@ MonoBehaviour:
   fruitSpawningRadius: 5
   FruitPrefab: {fileID: -7440843132101045095, guid: ccf904f26531c6f46b383011df0c5cae, type: 3}
   spawnedFruitY: 0.5
+  dieAudio: {fileID: 8300000, guid: 945f2999b16540e458a3396627c78fbe, type: 3}
+  audioVolume: 0.1
 --- !u!65 &4007521073579936360
 BoxCollider:
   m_ObjectHideFlags: 0
