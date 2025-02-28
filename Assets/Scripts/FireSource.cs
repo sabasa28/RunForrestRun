@@ -7,6 +7,8 @@ public class FireSource : Fire
     bool watered;
     float currentHealth;
     float maxHealth = 100.0f;
+    Vector3 feedbackFireInitialScale;
+    [SerializeField] Transform feedbackFire;
     [SerializeField] float waterDamage;
     enum DirectionsToExpandTo
     {
@@ -34,6 +36,7 @@ public class FireSource : Fire
         fireManager.OccupyGridSlot(new((int)(transform.position.x + 0.5f), (int)(transform.position.z + 0.5f)), this);
         fireManager.AddFireSource(this);
         posibleDirections = (int)DirectionsToExpandTo.Num;
+        feedbackFireInitialScale = feedbackFire.localScale;
     }
 
     protected override void Start()
@@ -98,6 +101,7 @@ public class FireSource : Fire
             if (currentHealth > 0.0f)
             {
                 currentHealth -= waterDamage * Time.fixedDeltaTime;
+                feedbackFire.localScale = (currentHealth / maxHealth) * feedbackFireInitialScale;
                 if (currentHealth <= 0.0f)
                 {
                     fireManager.RemoveFireSource(this);

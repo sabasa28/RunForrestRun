@@ -8,9 +8,12 @@ public class UISalesman : MonoBehaviour
     [SerializeField] PlayerThreeD player;
     [SerializeField] int moneyPerFruit;
     [SerializeField] int moneyPerSeed;
+    [SerializeField] int inflationPerSeed;
     [SerializeField] int moneyPerHoseUpgrade;
+    [SerializeField] int inflationPerHoseUpgrade;
     [SerializeField] int hoseMetersPerUpgrade;
     [SerializeField] int moneyPerSneakersUpgrade;
+    [SerializeField] int inflationPerSneakersUpgrade;
     [SerializeField] int speedPerSneakersUpgrade;
     [SerializeField] TextMeshProUGUI FruitDescription;
     [SerializeField] TextMeshProUGUI SeedDescription;
@@ -18,10 +21,7 @@ public class UISalesman : MonoBehaviour
     [SerializeField] TextMeshProUGUI SneakersDescription;
     private void Awake()
     {
-        FruitDescription.text = moneyPerFruit + "$ cada una";
-        SeedDescription.text = moneyPerSeed + "$ cada una";
-        HoseDescription.text = moneyPerHoseUpgrade + "$ cada " + hoseMetersPerUpgrade + " metros";
-        SneakersDescription.text = moneyPerSneakersUpgrade + "$ cada mejora";
+        UpdatePricesText();
     }
     public void SellFruit()
     {
@@ -32,6 +32,8 @@ public class UISalesman : MonoBehaviour
         if (player.TrySpendMoney(moneyPerSeed))
         {
             player.AddSeedAmount(1);
+            moneyPerSeed += inflationPerSeed;
+            UpdatePricesText();
         }
     }
     public void BuySneakersUpgrade()
@@ -39,6 +41,8 @@ public class UISalesman : MonoBehaviour
         if (player.TrySpendMoney(moneyPerSneakersUpgrade))
         {
             player.AddToSpeed(speedPerSneakersUpgrade);
+            moneyPerSneakersUpgrade += inflationPerSneakersUpgrade;
+            UpdatePricesText();
         }
     }
     public void BuyHoseUpgrade()
@@ -46,11 +50,21 @@ public class UISalesman : MonoBehaviour
         if (player.TrySpendMoney(moneyPerHoseUpgrade))
         {
             player.AddToHoseLenght(hoseMetersPerUpgrade);
+            moneyPerHoseUpgrade += inflationPerHoseUpgrade;
+            UpdatePricesText();
         }
     }
     public void CloseSalesman()
     {
         Time.timeScale = 1.0f;
         gameObject.SetActive(false);
+    }
+
+    void UpdatePricesText()
+    {
+        FruitDescription.text = "$" + moneyPerFruit + " cada una";
+        SeedDescription.text = "$" + moneyPerSeed + " cada una";
+        HoseDescription.text = "$" + moneyPerHoseUpgrade + " cada " + hoseMetersPerUpgrade + " metros";
+        SneakersDescription.text = "$" + moneyPerSneakersUpgrade + " cada mejora";
     }
 }

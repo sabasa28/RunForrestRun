@@ -48,6 +48,7 @@ public class PlayerThreeD : MonoBehaviour
     Vector3 hoseHoldingPointOrigin;
     Vector3 movement;
     [SerializeField] WaterTaxes waterTaxes;
+    public bool initialAnimationOver = false;
 
     private void Awake()
     {
@@ -71,6 +72,10 @@ public class PlayerThreeD : MonoBehaviour
 
     private void Update() //hice todo un quilombo con las direcciones pero no me voy a poner a arreglarlo, anda
     {
+        if (!initialAnimationOver)
+        {
+            return;
+        }
         float horizontalValue;
         float verticalValue;
         if (Input.GetKeyDown(KeyCode.Space))
@@ -187,9 +192,9 @@ public class PlayerThreeD : MonoBehaviour
                 characterController.SimpleMove((distTohose - CurrenthoseLength) * HoseRubberStrenght * normalVector);
             }
         }
-        AnimControl.SetBool("Caminar", moving);
+        AnimControl.SetBool("Caminar", (moving));
         AnimControl.SetBool("AgarroManguera", bIsHoldingHose);
-        AnimControl.SetFloat("VelocidadCaminar", (movement.magnitude * speed) / initialSpeed * animSpeedMultiplier);
+        AnimControl.SetFloat("VelocidadCaminar", shootingWater ? 0 : (movement.magnitude * speed) / initialSpeed * animSpeedMultiplier);
     }
 
     private void OnTriggerEnter(Collider other)
