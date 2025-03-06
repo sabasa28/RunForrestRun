@@ -2637,8 +2637,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Plant\xE1 nuevos \xE1rboles para repopular el bosque y recolectar sus
-    frutos.\nLos \xE1rboles deben estar distanciados entre ellos."
+  m_text: "Plant\xE1 nuevos \xE1rboles para repoblar el bosque y recolectar sus frutos.\nLos
+    \xE1rboles deben estar distanciados entre ellos."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
