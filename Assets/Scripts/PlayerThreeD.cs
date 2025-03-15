@@ -139,7 +139,7 @@ public class PlayerThreeD : MonoBehaviour
             if (GetWorldMousePosition(out Vector3 MousePos))
             {
                 shootingWater = true;
-                waterAudioSource.Play();
+                PlayWaterSound();
                 waterTaxes.SetUsingWater(shootingWater);
                 Vector3 ShootingDir = (MousePos - transform.position);
                 ShootingDir.y = 0.0f;
@@ -186,7 +186,7 @@ public class PlayerThreeD : MonoBehaviour
     {
         if (burning && !burningLastFrame)
         {
-            hurtAudioSource.Play();
+            PlayHurtSound();
         }
         else if (burningLastFrame && !burning)
         {
@@ -273,7 +273,6 @@ public class PlayerThreeD : MonoBehaviour
     {
         HealthBar.value = Mathf.Clamp(CurrentHealth / MaxHealth, 0.0f, 1.0f);
     }
-
 
     public void AddSeedAmount(int AmountToAdd)
     {
@@ -401,5 +400,17 @@ public class PlayerThreeD : MonoBehaviour
         fruitsAmount = 0;
         UpdateFruitsAmountText();
         return aux;
+    }
+
+    void PlayWaterSound()
+    {
+        waterAudioSource.volume = waterVolume * AudioManager.Get().sfxVolume;
+        waterAudioSource.Play();
+    }
+
+    void PlayHurtSound()
+    {
+        hurtAudioSource.volume = AudioManager.Get().sfxVolume;
+        hurtAudioSource.Play();
     }
 }

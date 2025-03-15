@@ -2,11 +2,45 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 public class UIMainMenu : MonoBehaviour
 {
     [SerializeField] GameObject InstructionsPanel;
     [SerializeField] GameObject CreditsPanel;
+    [SerializeField] GameObject ConfigsPanel;
     [SerializeField] GameObject PlayPanel;
+    [SerializeField] Slider MusicVolumeSlider;
+    [SerializeField] Slider SFXVolumeSlider;
+
+    private void Start()
+    {
+        MusicVolumeSlider.value = AudioManager.Get().musicVolume;
+        SFXVolumeSlider.value = AudioManager.Get().sfxVolume;
+    }
+
+    public void UpdateMusicVolume()
+    {
+        AudioManager.Get().UpdateMusicVolume(MusicVolumeSlider.value);
+    }
+
+    public void UpdateSFXVolume()
+    {
+        AudioManager.Get().sfxVolume = SFXVolumeSlider.value;
+    }
+
+    public void ShowConfigs(bool bShouldShow)
+    {
+        if (bShouldShow)
+        {
+            AudioManager.Get().PlayUISelect();
+        }
+        else
+        {
+            AudioManager.Get().PlayUIBack();
+        }
+        ConfigsPanel.SetActive(bShouldShow);
+    }
 
     public void ShowInstructions(bool bShouldShow)
     {
@@ -46,7 +80,6 @@ public class UIMainMenu : MonoBehaviour
         }
         PlayPanel.SetActive(bShouldShow);
     }
-
     public void GoToGameplayEasyScene()
     {
         AudioManager.Get().PlayUISelect();

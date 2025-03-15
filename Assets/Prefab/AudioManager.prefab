@@ -240,7 +240,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSource: {fileID: 3833485259496291825}
   musicSource: {fileID: 1661985497735793173}
-  musicClip: {fileID: 8300000, guid: 4191336e3d83738449a65ed00785b816, type: 3}
+  musicClipGameplay: {fileID: 8300000, guid: 4191336e3d83738449a65ed00785b816, type: 3}
+  musicClipMenu: {fileID: 8300000, guid: ede151e84d2310240bca51894c3eb226, type: 3}
   sfxVolume: 1
   musicVolume: 0.3
   uiSelectClip: {fileID: 8300000, guid: 8ca63d1d2986ce947803a3864db6994f, type: 3}
